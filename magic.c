@@ -9,13 +9,11 @@
  */
 
 
-int * get_numbers_array(int magic_number);
-int is_magic_box(int *array);
+int get_numbers_array(int magic_number, int *array_of_numbers);
+int is_magic_box(int *array, int size);
 
 int main(void)
 {
-	int *array_of;
-
 	printf ("\nWelcome to magic program!\n");
 	printf ("\nPlease enter magic box numbers\n");
 
@@ -35,47 +33,47 @@ int main(void)
 		printf ("\nThe first number you entered is not in the correct range or type\n");
 		return 0;
 	}
+	int array_size = c_number*c_number;
+	int array_of[array_size];
 
 
-	array_of = get_numbers_array(c_number);
-	if (array_of == 0)
+	int status = get_numbers_array(array_size, array_of);
+	if (status == 0)
 		return 0;
 
 
-	for (i = 0; i < c_number*c_number; i++ ) {
-		if (array_of[i] == '\n')
-		{
-			printf ("array_of[%d] = %d", i, array_of[i]);
-			printf( "\nError - please enter all the numbers in one line\n");
-			return 0;
-		}
+	for (i = 0; i < array_size; i++ ) {
+
 		if ((array_of[i] > c_number*c_number) || (array_of[i] < 0))
 		{
 			printf ("array_of[%d] = %d", i, array_of[i]);
-			printf ("\nError - please enter only numbers between 0-%f\n", pow(c_number,2));
+			printf ("\nError - please enter only numbers between 0-%.0f\n", pow(c_number,2));
 
 			return 0;
 		}
 		
 		
    	}
-	is_magic_box(&array_of);
+	is_magic_box(array_of,array_size);
 	return 1;
 }
 
-int * get_numbers_array(int magic_number)
+int get_numbers_array(int size, int *array_of_numbers)
 {
 	int b,b_number,index;
 	index = 0;
-	int magic_number_power = magic_number*magic_number;
 	
 
-	int array_of_numbers[magic_number_power];
 	while ((b = getchar()) != EOF)
 	{
 		while (b == ' ' || b == '\t')
 		{
 			b = getchar();
+		}
+		if (b == '\n')
+		{
+			printf( "\nError - please enter all the numbers in one line\n");
+			return 0;
 		}
 
 		b_number = 0;
@@ -87,22 +85,22 @@ int * get_numbers_array(int magic_number)
 		array_of_numbers[index] = b_number;
 		index++;
 	}
-	if (index > magic_number_power)
+	if (index > size)
 	{
 		printf ("\nToo many variants\n");
 		return 0;
 	}
-	if (index < magic_number_power)
+	if (index < size)
 	{
 		printf ("\nNot enougth variants\n");
 		return 0;
 	}
-	return array_of_numbers;
+	return 1;
 	
 
 }
 
-int is_magic_box(int *array)
+int is_magic_box(int *array, int size)
 {	int i;
 	for (i = 0; i < 5; i++ ) {
 			printf( "\narray[%d] = %d\n", i, array[i]);
