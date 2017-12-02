@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <ctype.h>
@@ -11,54 +12,33 @@
 
 int get_numbers_array(int magic_number, int *array_of_numbers);
 int is_magic_box(int *array, int size);
+int get_magic_box_size_side(int max_size);
 
 int main(void)
 {
-	printf ("\nWelcome to magic program!\n");
-	printf ("\nPlease enter magic box numbers\n");
-
-
-	int c,c_number,i;
 	static int const max_size = 8;
-	c = getchar();
-	c_number = 0;
-	while (isdigit(c))
-	{
-   		c_number = (c_number * 10) + (c - '0');
-   		c = getchar();
-	}
+	int magic_box_size_side;
+	int *array_of;
 
-	if (c_number < 3 || c_number > max_size)
-	{		
-		printf ("\nThe first number you entered is not in the correct range or type\n");
+
+	printf ("\nWelcome to magic program!\n");
+
+
+	// get the size side number (N)
+	magic_box_size_side = get_magic_box_size_side(max_size);
+	if (magic_box_size_side == 0)
 		return 0;
-	}
-	int array_size = c_number*c_number;
-	int array_of[array_size];
+	array_of = (int *) malloc(magic_box_size_side*magic_box_size_side);
 
 
-	int status = get_numbers_array(array_size, array_of);
-	if (status == 0)
+	if (get_numbers_array(magic_box_size_side, array_of) == 0)
 		return 0;
 
-
-	for (i = 0; i < array_size; i++ ) {
-
-		if ((array_of[i] > c_number*c_number) || (array_of[i] < 0))
-		{
-			printf ("array_of[%d] = %d", i, array_of[i]);
-			printf ("\nError - please enter only numbers between 0-%.0f\n", pow(c_number,2));
-
-			return 0;
-		}
-		
-		
-   	}
-	is_magic_box(array_of,array_size);
+	is_magic_box(array_of,magic_box_size_side);
 	return 1;
 }
 
-int get_numbers_array(int size, int *array_of_numbers)
+int get_numbers_array(int magic_size, int *array_of_numbers)
 {
 	int b,b_number,index;
 	index = 0;
@@ -72,7 +52,13 @@ int get_numbers_array(int size, int *array_of_numbers)
 		}
 		if (b == '\n')
 		{
-			printf( "\nError - please enter all the numbers in one line\n");
+			printf( "\nPlease enter all the numbers in one line\n");
+			return 0;
+		}
+		if (!isdigit(b))
+		{
+			printf ("\nPlease enter only numbers\n");
+
 			return 0;
 		}
 
@@ -85,14 +71,14 @@ int get_numbers_array(int size, int *array_of_numbers)
 		array_of_numbers[index] = b_number;
 		index++;
 	}
-	if (index > size)
+	if (index > magic_size*magic_size)
 	{
-		printf ("\nToo many variants\n");
+		printf ("\nYou entered too many variants for %d*%d magic box\n",magic_size, magic_size);
 		return 0;
 	}
-	if (index < size)
+	if (index < magic_size*magic_size)
 	{
-		printf ("\nNot enougth variants\n");
+		printf ("\nYou didn't enter enougth variants variants for %d*%d magic box\n",magic_size, magic_size);
 		return 0;
 	}
 	return 1;
@@ -100,10 +86,59 @@ int get_numbers_array(int size, int *array_of_numbers)
 
 }
 
-int is_magic_box(int *array, int size)
-{	int i;
-	for (i = 0; i < 5; i++ ) {
-			printf( "\narray[%d] = %d\n", i, array[i]);
+int is_magic_box(int *array, int magic_box_size_side)
+{	int row;
+	int column;
+	int sum = magic_box_size_side*(magic_box_size_side*magic_box_size_side+1)/2;
+	int sum_row;
+	int sum_column = 0;
+	int sum_diagonal = 0;
+	for (row = 0; row < magic_box_size_side; ++row ) {
+		sum_row = 0;
+		sum_column = 0;
+		for (column = 0; column < magic_box_size_side; ++column )  {
+			/* check if array elements between 1-N^2 */
+			if ((array[column+(magic_box_size_side*row)] > magic_box_size_side*magic_box_size_side) || (array[column+(magic_box_size_side*row)] < 1))
+			{
+				printf ("\nThe number %d is not in the right range\n", array[column+(magic_box_size_side*row)]);
+				printf ("\nPlease enter only numbers between 1-%.0f\n", pow(magic_box_size_side,2));
+				return 0;
+			}
+			sum_row = sum_row + array[column+(magic_box_size_side*row)];
+			sum_column = sum_column + array[row+(magic_box_size_side*column)];
+			if (row == column)
+            			sum_diagonal = sum_diagonal + array[column+(magic_box_size_side*row)];
+		}
+		if (sum != sum_row || sum != sum_column)
+		{
+			printf("\nNo Magic square\n");
+			return 0;
+		}
+	}
+	if (sum != sum_diagonal)
+	{
+		printf("\nNo Magic square\n");
+		return 0;
+	}
+printf("\nMagic square\n");	
+return 1;
 }
-return 0;
+
+int get_magic_box_size_side(int max_size)
+{
+	int c,c_number;
+	c = getchar();
+	c_number = 0;
+	while (isdigit(c))
+	{
+   		c_number = (c_number * 10) + (c - '0');
+   		c = getchar();
+	}
+
+	if (c_number < 3 || c_number > max_size)
+	{		
+		printf ("\nThe magic box size side you entered is not in the correct range or type\n");
+		return 0;
+	}
+	return c_number;
 }
