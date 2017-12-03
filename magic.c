@@ -5,39 +5,48 @@
 /*
  * Progrem: magic
  * ----------------------------
- *   The user enter a list of numbers in one line, starting with the magic box size side, and the program 
- *   Return 1 if it is a magic box and 0 otherwise
+ *   The user enter a list of numbers in one line, starting with the magic square size side, and the program 
+ *   Return 1 if it is a magic square and 0 otherwise
  */
 
 /*
  * Function: get_numbers_array
  * ----------------------------
- *   Get the magic box size side and a pointer to an array and put inside of the array numbers given by the user
- *   @param magic_number - magic box size side
+ *   Get the magic square size side and a pointer to an array and put inside of the array numbers given by the user
+ *   @param magic_number - magic square size side
  *   @param *array - a pointer to an array to put the magic numbers inside
  *   @return 0 if there was an error with one of the numbers 1 otherwise
  */
 int get_numbers_array(int magic_number, int *array);
 
 /*
- * Function: is_magic_box
+ * Function: is_magic_square
  * ----------------------------
- *   Get the magic box size side and a pointer to an array and put inside of the array numbers given by the user
- *   @param magic_number - magic box size side
+ *   Get the magic square size side and a pointer to an array and put inside of the array numbers given by the user
+ *   @param magic_number - magic square size side
  *   @param *array - a pointer to an array to put the magic numbers inside
  *   @return 0 if there was an error with one of the numbers 1 otherwise
  */
-int is_magic_box(int *array, int magic_number);
+int is_magic_square(int *array, int magic_number);
 
 /*
  * Function: get_magic_number
  * ----------------------------
- *   Get the max size of the magic box size side and return the magic number given by the user or 0 if there
+ *   Get the max size of the magic square size side and return the magic number given by the user or 0 if there
  *   was an error in the number
- *   @param max_size - magic box size side max value
- *   @return 0 if there was an error with one of the numbers, and the magic box size side otherwise
+ *   @param max_size - magic square size side max value
+ *   @return 0 if there was an error with one of the numbers, and the magic square size side otherwise
  */
 int get_magic_number(int max_size);
+
+/*
+ * Function: print_magic_square
+ * ----------------------------
+ *   Get the magic square size side and a pointer to an array and print the array as a square
+ *   @param magic_number - magic square size side
+ *   @param *array - a pointer to an array to print
+ */
+void print_magic_square(int magic_number, int *array);
 
 int main(void)
 {
@@ -61,9 +70,10 @@ int main(void)
 	/* put all the other numbers in the array */
 	if (get_numbers_array(magic_number, array_of) == 0)
 		return 0;
+	print_magic_square(magic_number, array_of);
 
-	/* check if the array is a magic box */
-	return is_magic_box(array_of,magic_number);
+	/* check if the array is a magic square */
+	return is_magic_square(array_of,magic_number);
 }
 
 int get_numbers_array(int magic_number, int *array)
@@ -109,19 +119,19 @@ int get_numbers_array(int magic_number, int *array)
 	}
 	if (index > magic_number*magic_number)
 	{
-		printf ("\nYou entered too many variants for %d*%d magic box\n",magic_number, magic_number);
+		printf ("\nYou entered too many variants for %d*%d magic square\n",magic_number, magic_number);
 		return 0;
 	}
 	if (index < magic_number*magic_number)
 	{
-		printf ("\nYou didn't enter enougth variants variants for %d*%d magic box\n",magic_number, magic_number);
+		printf ("\nYou didn't enter enougth variants variants for %d*%d magic square\n",magic_number, magic_number);
 		return 0;
 	}
 	return 1;
 
 }
 
-int is_magic_box(int *array, int magic_number)
+int is_magic_square(int *array, int magic_number)
 {	int row;
 	int column;
 	int sum = magic_number*(magic_number*magic_number+1)/2;
@@ -146,16 +156,16 @@ int is_magic_box(int *array, int magic_number)
 		}
 		if (sum != sum_row || sum != sum_column)
 		{
-			printf("\nNo Magic square\n");
+			printf("\nSorry, the numbers that you entered are not creating magic square\n");
 			return 0;
 		}
 	}
 	if (sum != sum_diagonal)
 	{
-		printf("\nNo Magic square\n");
+		printf("\nSorry, the numbers that you entered are not creating magic square\n");
 		return 0;
 	}
-printf("\nMagic square\n");	
+printf("\nWell done! you entered a magic square\n");	
 return 1;
 }
 
@@ -172,8 +182,25 @@ int get_magic_number(int max_size)
 
 	if (c_number < 3 || c_number > max_size)
 	{		
-		printf ("\nThe magic box size side you entered is not in the correct range or type\n");
+		printf ("\nThe magic square size side you entered is not in the correct range or type\n");
 		return 0;
 	}
 	return c_number;
+}
+
+void print_magic_square(int magic_number, int *array)
+
+{	int row;
+	int column;
+
+	printf ("\nHere are the numbers that you entered:\n");
+
+	for (row = 0; row < magic_number; ++row ) {
+		for (column = 0; column < magic_number; ++column )  {
+			printf("%d\t",array[column+(magic_number*row)]);
+		}
+		printf("\n");			
+	}
+
+
 }
